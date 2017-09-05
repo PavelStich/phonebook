@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>View, Edit & Remove Contact</title>
+    <style>
+        a { color: #fff; cursor: pointer; }
+        a:link, a:visited { text-decoration: none; color: #fff; }
+        a:hover, a:active { text-decoration: underline; color: #fff; }
+        body { font: 40px "Lucida Grande", "Lucida Sans Unicode", sans-serif; }
+        body {background-color: #004587 !important;border: 0 !important; color: #fff}
+        #contacts-table { border-collapse: collapse; }
+        #contacts-table, #contacts-table th, #contacts-table td {left: 0; top: 0;padding: 8px 16px; text-align: center; border: 0px solid #000; }
+        #contacts-table th { font-weight: bold; font-size: 40px; color: #fff; }
+        #contacts-table td { color: #fff; }
+        #contacts-form { padding: 0px; text-align: center;width: 100%;margin: 0 auto;border-top: 0px solid #fff;}
+        .text input, .button input { padding: 5px; margin: 0; border: 1px solid #ccc; -moz-border-radius: 2px;
+                                    -webkit-border-radius: 2px; border-radius: 2px; }
+        #contacts-form .item { margin: 3px 0;float: left;width: 100%;}
+        #contacts-form label{ display: inline-block; color: #fff;}
+        #contacts-form label {  font-weight: bold; text-align: center; color: #fff; }
+        #contacts-form .text input { width: 176px; padding: 3px; color: #000}
+        #contacts-form .button { display: inline-block; }
+        .button input { padding: 4px 8px; color: #343434; background-color: #fdfdfd; background: -moz-linear-gradient(#fdfdfd, #e1e1e1); background: -webkit-gradient(linear, 0 0, 0 100%, from(#fdfdfd), to(#e1e1e1)); }
+        .button-default input { font-weight: bold; color: #fff; background-color: #7ca0c7; background: -moz-linear-gradient(#acc6e1, #7ca0c7); background: -webkit-gradient(linear, 0 0, 0 100%, from(#acc6e1), to(#7ca0c7)); border-color: #5b80b2; }
+        ul{float: left;}
+        ul li{display: inline-block; color: #fff;}
+        a{text-decoration: none;color: #fff;-webkit-transition: all .2s;-moz-transition: all .2s;
+            -ms-transition: all .2s;-o-transition: all .2s;transition: all .2s;}
+        footer {border: 0 !important;}
+        nav li a{color: #fff;font-size: 40px;margin-bottom: 5px;padding: 20px 0px 0px 0px;
+            text-align: center;text-transform: uppercase;border-bottom: 10px solid transparent;display: table-cell;
+            width: 300px;height: 50%;overflow: hidden;}
+        #table-view {color: #fff; width: auto}
+        #view-table {width: auto;margin: 0 auto;}
+        #view-table td:nth-child(3){padding-left: 100px;}
+        #view-table a {margin: 75px}
+        input[type=submit], input[type=button] {background: transparent;color: #fff;font: 40px "Lucida Grande", "Lucida Sans Unicode", sans-serif;
+            border: none;cursor: pointer;}
+        input[type=text] {width: 140px;-webkit-transition: width 0.4s ease-in-out;transition: width 0.4s ease-in-out;}
+        input[type=text]:focus {width: 70%;}
+    </style>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.4.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {$("body").css("display", "none");
+            $("body").fadeIn(1000);
+            $("a.fade").click(function(event){event.preventDefault();
+                linkLocation = this.href;
+                $("body").fadeOut(500, redirectPage);});
+            function redirectPage() {window.location = linkLocation;}});
+    </script>
+</head>
+<body>
+<table id="contacts-table" style="display: none;">
+    <thead>
+    <tr id="contacts-head">
+        <th>ID</th>
+        <th>First name</th>
+        <th>Last name</th>
+        <th>Home Phone</th>
+        <th>Work Phone</th>
+        <th>Home Email</th>
+        <th>Work Email</th>
+    </tr>
+    </thead>
+</table>
+<table id="view-table">
+    <tr><td>First name:</td><td id="table-fn"></td></tr>
+    <tr><td>Last name:</td><td id="table-ln"></td></tr>
+    <tr><td>Home Phone:</td><td id="table-hp"></td></tr>
+    <tr><td>Work Phone:</td><td id="table-wp"></td></tr>
+    <tr><td>Home Email:</td><td id="table-he"></td></tr>
+    <tr><td>Work Email:</td><td id="table-we"></td></tr>
+    <tr><td colspan="4" id="table-commands"></td></tr>
+</table>
+<form id="contacts-form" style="display: none;">
+    <div id="table-view">
+        <tr><td class="item text">First name:</td><td>
+            <input class="view-entry" type="text" name="first_name" id="first_name" /></td></tr><br>
+        <tr><td class="item text">Last name:</td><td>
+            <input class="view-entry" type="text" name="last_name" id="last_name" /></td></tr><br>
+        <tr><td class="item text">Home Phone:</td><td>
+            <input class="view-entry" type="text" name="phone" id="phone" /></td></tr><br>
+        <tr><td class="item text">Work Phone:</td><td>
+            <input class="view-entry" type="text" name="workphone" id="workphone" /></td></tr><br>
+        <tr><td class="item text">Home Email:</td><td>
+            <input class="view-entry" type="text" name="email" id="email" /></td></tr><br>
+        <tr><td class="item text">Work Email:</td><td>
+            <input class="view-entry" type="text" name="workemail" id="workemail" /></td></tr>
+    </div>
+        <div class="item button">
+            <tr><input type="submit" id="contacts-op-add" value="Accept" /></tr>&nbsp;&nbsp;|&nbsp;&nbsp;
+            <tr><input type="button" id="contacts-op-clear" value="Clear" /></tr>
+        </div>
+        <input type="hidden" name="id_entry" value="0" />
+    </div>
+</form>
+<script>
+    var Contacts = {
+        index: window.localStorage.getItem("Contacts:index"),
+        $table: document.getElementById("contacts-table"),
+        $view_table: document.getElementById("view-table"),
+        $form: document.getElementById("contacts-form"),
+        $button_add: document.getElementById("contacts-op-add"),
+        $button_clear: document.getElementById("contacts-op-clear"),
+        current_id: -1,
+        init: function() {
+// initialize storage index
+            if (!Contacts.index) {
+                window.localStorage.setItem("Contacts:index", Contacts.index = 1);
+            }
+            var searchParams = new URLSearchParams(window.location.search);
+            current_id = searchParams.get("id");
+
+// initialize form
+            Contacts.$form.reset();
+            Contacts.$button_clear.addEventListener("click", function(event) {
+                Contacts.$form.reset();
+                Contacts.$form.id_entry.value = 0;
+            }, true);
+            Contacts.$form.addEventListener("submit", function(event) {
+                event.preventDefault();
+                var entry = {
+                    id: parseInt(this.id_entry.value),
+                    first_name: this.first_name.value,
+                    last_name: this.last_name.value,
+                    phone: this.phone.value,
+                    workphone: this.workphone.value,
+                    email: this.email.value,
+                    workemail: this.workemail.value
+                };
+                if (entry.id == 0) { Contacts.storeAdd(entry);Contacts.tableAdd(entry);
+                }
+                else { Contacts.storeEdit(entry);}
+                window.location.reload(false);
+            }, true);
+
+// initialize table
+            if (window.localStorage.length - 1) {
+                var contacts_list = [], i, key;
+                for (i = 0; i < window.localStorage.length; i++) {
+                    key = window.localStorage.key(i);
+                    if (/Contacts:\d+/.test(key)) {
+                        contacts_list.push(JSON.parse(window.localStorage.getItem(key)));
+                    }}
+                if (contacts_list.length) {
+                    contacts_list
+                        .sort(function(a, b) {
+                            return a.id < b.id ? -1 : (a.id > b.id ? 1 : 0);
+                        })
+                        .forEach(Contacts.tableAdd);}
+                contacts_list.some(this.printElem);
+            }
+            Contacts.$view_table.addEventListener("click", function(event) {
+                var op = event.target.getAttribute("data-op");
+                if (/edit|remove/.test(op)) {
+                    var entry = JSON.parse(window.localStorage.getItem("Contacts:"+ event.target.getAttribute("data-id")));
+                    if (op == "edit") {
+                        document.getElementById('contacts-form').setAttribute('style', 'display: block');
+                        Contacts.$form.first_name.value = entry.first_name;
+                        Contacts.$form.last_name.value = entry.last_name;
+                        Contacts.$form.phone.value = entry.phone;
+                        Contacts.$form.workphone.value = entry.workphone;
+                        Contacts.$form.email.value = entry.email;
+                        Contacts.$form.workemail.value = entry.workemail;
+                        Contacts.$form.id_entry.value = entry.id;}
+                    else if (op == "remove") {
+                        if (confirm('Are you sure you want to remove "'+ entry.first_name +' '+ entry.last_name +'" from your contacts?')) {
+                            Contacts.storeRemove(entry);
+                            window.location.href = './index.html';}}
+                    event.preventDefault();
+                }
+            }, true);
+        },
+        printElem: function(element, index, array) {
+            if (element.id == current_id) {
+                document.getElementById("table-fn").appendChild(document.createTextNode(element.first_name));
+                document.getElementById("table-ln").appendChild(document.createTextNode(element.last_name));
+                document.getElementById("table-hp").appendChild(document.createTextNode(element.phone));
+                document.getElementById("table-wp").appendChild(document.createTextNode(element.workphone));
+                document.getElementById("table-he").appendChild(document.createTextNode(element.email));
+                document.getElementById("table-we").appendChild(document.createTextNode(element.workemail));
+                document.getElementById("table-commands").innerHTML = '<a data-op="edit" data-id="'+ element.id +'">Edit</a> | <a data-op="remove" data-id="'+ element.id +'">Remove</a> | <a href="./index.html">Back</a>';
+                return true;
+            }},
+        storeAdd: function(entry) {
+            entry.id = Contacts.index;
+            window.localStorage.setItem("Contacts:index", ++Contacts.index);
+            window.localStorage.setItem("Contacts:"+ entry.id, JSON.stringify(entry));
+        },
+        storeEdit: function(entry) {
+            window.localStorage.setItem("Contacts:"+ entry.id, JSON.stringify(entry));
+        },
+        storeRemove: function(entry) {
+            window.localStorage.removeItem("Contacts:"+ entry.id);
+        },
+        tableAdd: function(entry) {
+            if ((current_id !== null) && (entry.id !== current_id)) {
+                return;
+            }
+            var $tr = document.createElement("tr"), $td, key;
+            for (key in entry) {
+                if (entry.hasOwnProperty(key)) {
+                    $td = document.createElement("td");
+                    $td.appendChild(document.createTextNode(entry[key]));
+                    $tr.appendChild($td);
+                }}
+            $td = document.createElement("td");
+            $td.innerHTML = '<a data-op="edit" data-id="'+ entry.id +'">Edit</a> | <a data-op="remove" data-id="'+ entry.id +'">Remove</a>';
+            $tr.appendChild($td);
+            $tr.setAttribute("id", "entry-"+ entry.id);
+            Contacts.$table.appendChild($tr);
+        },
+        tableEdit: function(entry) {
+            var $tr = document.getElementById("entry-"+ entry.id), $td, key;
+            $tr.innerHTML = "";
+            for (key in entry) {
+                if (entry.hasOwnProperty(key)) {
+                    $td = document.createElement("td");
+                    $td.appendChild(document.createTextNode(entry[key]));
+                    $tr.appendChild($td);
+                }}
+            $td = document.createElement("td");
+            $td.innerHTML = '<a data-op="edit" data-id="'+ entry.id +'">Edit</a> | <a data-op="remove" data-id="'+ entry.id +'">Remove</a>';
+            $tr.appendChild($td);
+        },
+        tableRemove: function(entry) {
+            Contacts.$table.removeChild(document.getElementById("entry-"+ entry.id));
+        }};
+    Contacts.init();
+</script>
+</body>
+</html>
